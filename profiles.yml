@@ -1,0 +1,10 @@
+dbt_fabric:
+  outputs:
+    dev:
+      type: fabric
+      server: "<fabric-server>"
+      database: "<your-dev-warehouse>"
+      schema: dbo
+      authentication: service-principal
+
+  target: dev
