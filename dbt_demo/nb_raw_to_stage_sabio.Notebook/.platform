@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Notebook",
+    "displayName": "nb_raw_to_stage_sabio"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "d1e13138-f7f5-af3d-40a0-bca00065385c"
+  }
+}

@@ -1,0 +1,133 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "Lookup",
+        "typeProperties": {
+          "source": {
+            "type": "LakehouseTableSource"
+          },
+          "datasetSettings": {
+            "type": "LakehouseTable",
+            "typeProperties": {
+              "schema": "dbo",
+              "table": "meta_workspace_lakehouse_mapping"
+            },
+            "schema": [],
+            "linkedService": {
+              "name": "dbt_demo_lakehouse",
+              "properties": {
+                "type": "Lakehouse",
+                "typeProperties": {
+                  "artifactId": "5f7e75aa-11b5-a375-40b5-9c8a0a642a71",
+                  "workspaceId": "00000000-0000-0000-0000-000000000000",
+                  "rootFolder": "Tables"
+                },
+                "annotations": []
+              }
+            },
+            "annotations": []
+          },
+          "firstRowOnly": false
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Get Meta Data Info",
+        "dependsOn": []
+      },
+      {
+        "type": "ForEach",
+        "typeProperties": {
+          "items": {
+            "value": "@activity('Filter InActive sources').output.value",
+            "type": "Expression"
+          },
+          "activities": [
+            {
+              "type": "TridentNotebook",
+              "typeProperties": {
+                "notebookId": "d1e13138-f7f5-af3d-40a0-bca00065385c",
+                "workspaceId": "00000000-0000-0000-0000-000000000000",
+                "parameters": {
+                  "workspace_id": {
+                    "value": {
+                      "value": "@item().workspace_id",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "lakehouse_id": {
+                    "value": {
+                      "value": "@item().lakehouse_id",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "schema_name": {
+                    "value": {
+                      "value": "@item().schema_name",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  },
+                  "source_name": {
+                    "value": {
+                      "value": "@item().source_name",
+                      "type": "Expression"
+                    },
+                    "type": "string"
+                  }
+                }
+              },
+              "policy": {
+                "timeout": "0.12:00:00",
+                "retry": 0,
+                "retryIntervalInSeconds": 30,
+                "secureInput": false,
+                "secureOutput": false
+              },
+              "name": "sabio_raw_to_stage",
+              "dependsOn": []
+            }
+          ]
+        },
+        "name": "ForEach1",
+        "dependsOn": [
+          {
+            "activity": "Filter InActive sources",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "Filter",
+        "typeProperties": {
+          "items": {
+            "value": "@activity('Get Meta Data Info').output.value",
+            "type": "Expression"
+          },
+          "condition": {
+            "value": "@equals(item().is_active, 1)",
+            "type": "Expression"
+          }
+        },
+        "name": "Filter InActive sources",
+        "dependsOn": [
+          {
+            "activity": "Get Meta Data Info",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

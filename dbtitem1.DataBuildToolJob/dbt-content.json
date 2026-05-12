@@ -1,0 +1,32 @@
+{
+  "project": {
+    "projectType": "GitHub",
+    "branch": "main",
+    "folderPath": "dbt",
+    "externalReferences": {
+      "connection": "39c7dc73-be8d-4101-af3f-0209116daa1c"
+    }
+  },
+  "profile": {
+    "profileType": "DataWarehouse",
+    "schema": "jaffle_shop",
+    "connectionSettings": {
+      "name": "dev_warehouse",
+      "properties": {
+        "type": "DataWarehouse",
+        "typeProperties": {
+          "workspaceId": "c2466ec4-c68c-460a-802c-3845904cf05a",
+          "artifactId": "33c3a2e9-6e53-4d1e-a941-17f65c66ec2b",
+          "endPoint": "udaaakhjoc7etbzt7lvknlhnte-yrxenqumyyfenabmhbczathqli.datawarehouse.fabric.microsoft.com"
+        }
+      }
+    }
+  },
+  "command": {
+    "operation": "build",
+    "arguments": {
+      "exclude": "",
+      "threads": 4
+    }
+  }
+}

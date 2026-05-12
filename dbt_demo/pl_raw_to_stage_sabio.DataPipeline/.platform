@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "DataPipeline",
+    "displayName": "pl_raw_to_stage_sabio"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "54afd582-7760-84ed-4cc8-5418845bec64"
+  }
+}
