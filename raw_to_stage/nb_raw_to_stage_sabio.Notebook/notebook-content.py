@@ -22,6 +22,7 @@
 
 # CELL ********************
 
+# Import Fabric/Synapse notebook utilities for file system, secrets, and environment operations
 from notebookutils import mssparkutils
 
 # METADATA ********************
@@ -30,6 +31,10 @@ from notebookutils import mssparkutils
 # META   "language": "python",
 # META   "language_group": "synapse_pyspark"
 # META }
+
+# MARKDOWN ********************
+
+# #### Define Dynamic Runtime Parameters
 
 # PARAMETERS CELL ********************
 
@@ -47,8 +52,10 @@ source_name = ""
 
 # CELL ********************
 
+# Construct OneLake ABFSS path dynamically for the given workspace, lakehouse, and schema
 source_path = f"abfss://{workspace_id}@onelake.dfs.fabric.microsoft.com/{lakehouse_id}/Tables/{schema_name}"
 
+# List all tables/files available in the specified schema directory
 table_paths = mssparkutils.fs.ls(source_path)
 
 # METADATA ********************
@@ -58,23 +65,52 @@ table_paths = mssparkutils.fs.ls(source_path)
 # META   "language_group": "synapse_pyspark"
 # META }
 
+# MARKDOWN ********************
+
+# #### Ingest and Replicate Tables Across Lakehouses
+# 
+# This step iterates through all discovered tables in the source schema and copies them into the target workspace/lakehouse structure.
+# 
+# #### Operations Performed
+# - Iterates through all tables in the source schema directory
+# - Filters out system/internal tables (names starting with `_`)
+# - Constructs source and target table paths dynamically
+# - Creates target schema if it does not exist
+# - Reads Delta tables from source lakehouse
+# - Writes data into target lakehouse as managed Delta tables
+# 
+# #### Key Features
+# - Fully metadata-driven ingestion
+# - Dynamic schema creation per source
+# - Overwrites target tables with latest data
+# - Preserves Delta format for consistency
+
 # CELL ********************
 
+# Iterate through all tables discovered in source schema path
 for t in table_paths:
 
+    # Extract clean table name by removing trailing slash
     table_name = t.name.replace("/", "")
 
+    # Skip system/internal metadata folders
     if table_name.startswith("_"):
         continue
 
+    # Construct full source table path in OneLake
     src_table_path = f"{source_path}/{table_name}"
+
+    # Define target schema and fully qualified table name
     final_schema_name = f"{source_name}_{schema_name}"
     target_table = f"{final_schema_name}.{table_name}"
 
+    # Ensure target schema exists in the workspace
     spark.sql(f"CREATE SCHEMA IF NOT EXISTS {final_schema_name}")
 
+    # Read source Delta table
     df = spark.read.format("delta").load(src_table_path)
 
+    # Write data into target as managed Delta table (overwrite mode)
     (
         df.write
         .mode("overwrite")

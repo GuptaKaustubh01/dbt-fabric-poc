@@ -20,16 +20,9 @@
 # META   }
 # META }
 
-# CELL ********************
+# MARKDOWN ********************
 
-import uuid
-
-# METADATA ********************
-
-# META {
-# META   "language": "python",
-# META   "language_group": "synapse_pyspark"
-# META }
+# ### Initialize Fabric Environment Utilities#
 
 # CELL ********************
 
@@ -41,6 +34,22 @@ import uuid
 # META   "language": "python",
 # META   "language_group": "synapse_pyspark"
 # META }
+
+# CELL ********************
+
+# Import uuid module for generating unique identifiers
+import uuid
+
+# METADATA ********************
+
+# META {
+# META   "language": "python",
+# META   "language_group": "synapse_pyspark"
+# META }
+
+# MARKDOWN ********************
+
+# #### Define Source-to-Lakehouse Mapping Configuration
 
 # CELL ********************
 
@@ -74,6 +83,7 @@ data = [
 
 # CELL ********************
 
+# Transform configuration data into structured metadata rows for table insertion
 rows = []
 
 for item in data:
@@ -109,8 +119,10 @@ for item in data:
 
 # CELL ********************
 
+# Convert prepared metadata rows into Spark DataFrame
 df = spark.createDataFrame(rows)
 
+# Create temporary view for SQL-based processing and staging
 df.createOrReplaceTempView("meta_stage_view")
 
 # METADATA ********************
@@ -120,12 +132,18 @@ df.createOrReplaceTempView("meta_stage_view")
 # META   "language_group": "synapse_pyspark"
 # META }
 
+# MARKDOWN ********************
+
+# #### Create Delta Table for Workspace-Lakehouse Mapping
+
 # CELL ********************
 
+# Drop existing mapping table if present to ensure clean recreation
 spark.sql("""
 DROP TABLE IF EXISTS meta_workspace_lakehouse_mapping
 """)
 
+# Create Delta table for storing workspace-lakehouse metadata mappings
 spark.sql("""
 CREATE TABLE meta_workspace_lakehouse_mapping (
     meta_id STRING,
